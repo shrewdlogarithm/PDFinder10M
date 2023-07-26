@@ -22,3 +22,10 @@
   table {
     font-size: 10px;
   }
+  #progbar {
+    position: absolute;
+    width: 80%;
+    left: 10%;
+    top: 100px;
+    display: none;
+  }

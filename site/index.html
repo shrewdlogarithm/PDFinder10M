@@ -25,7 +25,7 @@
 
   <!-- Font awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
-
+  
   <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 
@@ -36,9 +36,9 @@
   <!-- Custom Axis Scale -->
   <script src="drainaxis.js"></script>
 
-  <!-- TableSorter -->
+  <!-- TableSorter
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js" integrity="sha512-qzgd5cYSZcosqpzpn7zF2ZId8f/8CHmFKZ8j7mU4OUXTNRd5g+ZHBPsgKEwoqxCtdQvExE5LprwwPAgoicguNg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js" integrity="sha512-dj/9K5GRIEZu+Igm9tC16XPOTz0RdPk9FGxfZxShWf65JJNU2TjbElGjuOo3EhwAJRPhJxwEJ5b+/Ouo+VqZdQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js" integrity="sha512-dj/9K5GRIEZu+Igm9tC16XPOTz0RdPk9FGxfZxShWf65JJNU2TjbElGjuOo3EhwAJRPhJxwEJ5b+/Ouo+VqZdQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
 
   <script src="script.js"></script> 
 
@@ -47,44 +47,45 @@
 <body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true" data-sidebar-shortcut-enabled="true">    
     <div id="page-wrapper" class="page-wrapper with-navbar with-navbar-fixed-bottom">
       <nav class="navbar">
-          <a href="#" class="navbar-brand ml-10 ml-sm-20">
-              <span class="d-none d-sm-flex">Brand</span>
-          </a>
+          <a href="https://github.com/shrewdlogarithm/PDFinder10M" target="new" class="navbar-brand ml-10 ml-sm-20">
+              <span class="d-none d-sm-flex">PDFinder10M</span>
+              <i class="fa fa-github"></i>
+          </a>          
           <div class="navbar-content ml-auto">
-          <div class="dropdown">
-              <button class="btn btn-primary" data-toggle="dropdown" type="button" id="connect-load" aria-haspopup="true" aria-expanded="false">
-                Connect/Load <i class="fa fa-angle-down ml-5" aria-hidden="true"></i> <!-- ml-5 = margin-left: 0.5rem (5px) -->
-              </button>
-              <div class="dropdown-menu dropdown-menu-center w-250 w-sm-350" aria-labelledby="sign-in-dropdown-toggle-btn"> <!-- w-250 = width: 25rem (250px), w-sm-350 = width: 35rem (350px) only on devices where width > 576px -->
-                <div class="dropdown-content p-20"> <!-- p-20 = padding: 2rem (20px) -->
-                  <div class="form-group">
-                    <label for="device">Device</label>
-                    <select id="device" disabled="True">
-                      
-                    </select>                        
+            <div class="dropdown">
+                <button class="btn btn-primary" data-toggle="dropdown" type="button" id="connect-load" aria-haspopup="true" aria-expanded="false">
+                  Connect/Load <i class="fa fa-angle-down ml-5" aria-hidden="true"></i> <!-- ml-5 = margin-left: 0.5rem (5px) -->
+                </button>
+                <div class="dropdown-menu dropdown-menu-center w-250 w-sm-350" aria-labelledby="sign-in-dropdown-toggle-btn"> <!-- w-250 = width: 25rem (250px), w-sm-350 = width: 35rem (350px) only on devices where width > 576px -->
+                  <div class="dropdown-content p-20"> <!-- p-20 = padding: 2rem (20px) -->
+                    <div class="form-group">
+                      <label for="device">Device</label>
+                      <select id="device">
+                        
+                      </select>                        
+                    </div>
+                      <input id="devbutton" class="btn btn-primary btn-block" type="button" value="Connect to Device" onclick="connectclick()">
                   </div>
-                    <input id="devbutton" class="btn btn-primary btn-block" type="button" value="Connect to Device" onclick="connectclick()">
-                </div>
-                <div class="dropdown-content p-20"> <!-- p-20 = padding: 2rem (20px) -->
-                  <div class="form-group">
-                    <label for="logfile">Previous Data</label>
-                    <select id="logfile">
-                      
-                    </select>
+                  <div class="dropdown-content p-20"> <!-- p-20 = padding: 2rem (20px) -->
+                    <div class="form-group">
+                      <label for="logfile">Previous Data</label>
+                      <select id="logfile">
+                        
+                      </select>
+                    </div>
+                    <input id="logbutton" class="btn btn-primary btn-block" type="button" value="Load Log" onclick="loadclick()">
                   </div>
-                  <input id="logbutton" class="btn btn-primary btn-block" type="button" value="Load Log" onclick="loadclick()">
+                  <div class="dropdown-divider"></div>
+                  Some text here
                 </div>
-                <div class="dropdown-divider"></div>
-                Some text here
-              </div>
-          </div>
+           </div>  
           </div>
           <div class="navbar-content ml-auto">
               <button class="btn btn-action mr-5" type="button" onclick="toggleDarkMode()">
                   <i class="fa fa-moon-o" aria-hidden="true"></i>
                   <span class="sr-only">Toggle dark mode</span>
               </button>
-              <a class="btn btn-primary btn-block" id="clearbutton" role="button" onclick="cleardata()">Clear</a>
+              <!-- <a class="btn btn-primary btn-block" id="clearbutton" role="button" onclick="cleardata()">Clear</a> -->
           </div>
       </nav>
       <div class="content-wrapper" style="overflow: hidden">
@@ -94,6 +95,11 @@
             <div class="chart-wrapper">
               <div id="chart-demo-line" class="chart-lg"></div>
               <canvas id="myChart"></canvas>
+            </div>
+            <div id="progbar">
+              <div class="progress h-25"> <!-- h-25 = height: 2.5rem (25px) -->
+                <div class="progress-bar rounded-0" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div> <!-- w-three-quarter = width: 75%, rounded-0 = border-radius: 0 -->
+              </div>
             </div>
           </div>
         </div>                  
