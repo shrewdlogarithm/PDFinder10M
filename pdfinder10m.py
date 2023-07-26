@@ -19,7 +19,7 @@ async def getbledevs():
     blenames = []
     devices = await BleakScanner.discover(return_adv=True)
     for d, a in devices.values():            
-        if d.name:
+        if d.name and d.name != d.address.replace(":","-"): # on Linux blank names show as MAC - we don't want those
             blenames.append({"name": d.name,"mac": d.address})
     return blenames
 
@@ -46,7 +46,7 @@ def sendval(dev,val):
     val = abs(round(val,3)*1000) # we care not for negative values or undue precision...
     if tim-lasttime > 250: # this gets called a LOT - esp from BLE devices - we max out at 4/s
         sse.add_message(json.dumps({"type": "data","value": val,"time": tim}))
-        utils.writelogs(dev,[[tim,val]])
+        utils.writelogs(dev.replace("/dev/tty",""),[[tim,val]])
         lasttime = tim
 
 def closelog():
