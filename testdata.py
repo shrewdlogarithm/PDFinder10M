@@ -15,7 +15,7 @@ def gettestdata():
         if random.random()*100>99:
             startc -= startc/(random.random()*5+5)
         logs.append([ftime.timestamp()*1000,round(startc,0)])
-        ftime += timedelta(seconds=5) 
+        ftime += timedelta(seconds=1) 
 
     lastup = 0
     # are we asleep - current over 250ma has 1/100000 chance of losing 50% of it's value - current under has 1/1000000 chance of gaining 250-1000ma
@@ -27,7 +27,7 @@ def gettestdata():
             startc -= lastup
             lastup = 0            
         logs.append([ftime.timestamp()*1000,round(startc,0)])
-        ftime += timedelta(seconds=5) 
+        ftime += timedelta(seconds=1) 
     print(len(logs))
     return(logs)
 
