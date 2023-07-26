@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Meta tags -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+  <meta name="viewport" content="width=device-width" />
+
+  <!-- Chrome, Firefox OS and Opera mobile address bar theming -->
+  <meta name="theme-color" content="#000000">
+  <!-- Windows Phone mobile address bar theming -->
+  <meta name="msapplication-navbutton-color" content="#000000">
+  <!-- iOS Safari mobile address bar theming -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="#000000">
+
+  <link href="styles.css" rel="stylesheet" />
+
+  <!-- Halfmoon -->
+  <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon.min.css" rel="stylesheet" />
+
+  <!-- Halfmoon JS -->
+  <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/js/halfmoon.min.js"></script>
+
+  <!-- Font awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+  <!-- ChartJS  -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@^4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  
+  <!-- Custom Axis Scale -->
+  <script src="drainaxis.js"></script>
+
+  <!-- TableSorter -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js" integrity="sha512-qzgd5cYSZcosqpzpn7zF2ZId8f/8CHmFKZ8j7mU4OUXTNRd5g+ZHBPsgKEwoqxCtdQvExE5LprwwPAgoicguNg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js" integrity="sha512-dj/9K5GRIEZu+Igm9tC16XPOTz0RdPk9FGxfZxShWf65JJNU2TjbElGjuOo3EhwAJRPhJxwEJ5b+/Ouo+VqZdQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="script.js"></script> 
+
+</head>
+
+<body class="dark-mode with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true" data-sidebar-shortcut-enabled="true">    
+    <div id="page-wrapper" class="page-wrapper with-navbar with-navbar-fixed-bottom">
+      <nav class="navbar">
+          <a href="#" class="navbar-brand ml-10 ml-sm-20">
+              <span class="d-none d-sm-flex">Brand</span>
+          </a>
+          <div class="navbar-content ml-auto">
+          <div class="dropdown">
+              <button class="btn btn-primary" data-toggle="dropdown" type="button" id="connect-load" aria-haspopup="true" aria-expanded="false">
+                Connect/Load <i class="fa fa-angle-down ml-5" aria-hidden="true"></i> <!-- ml-5 = margin-left: 0.5rem (5px) -->
+              </button>
+              <div class="dropdown-menu dropdown-menu-center w-250 w-sm-350" aria-labelledby="sign-in-dropdown-toggle-btn"> <!-- w-250 = width: 25rem (250px), w-sm-350 = width: 35rem (350px) only on devices where width > 576px -->
+                <div class="dropdown-content p-20"> <!-- p-20 = padding: 2rem (20px) -->
+                  <div class="form-group">
+                    <label for="device">Device</label>
+                    <select id="device" disabled="True">
+                      
+                    </select>                        
+                  </div>
+                    <input id="devbutton" class="btn btn-primary btn-block" type="button" value="Connect to Device" onclick="connectclick()">
+                </div>
+                <div class="dropdown-content p-20"> <!-- p-20 = padding: 2rem (20px) -->
+                  <div class="form-group">
+                    <label for="logfile">Previous Data</label>
+                    <select id="logfile">
+                      
+                    </select>
+                  </div>
+                  <input id="logbutton" class="btn btn-primary btn-block" type="button" value="Load Log" onclick="loadclick()">
+                </div>
+                <div class="dropdown-divider"></div>
+                Some text here
+              </div>
+          </div>
+          </div>
+          <div class="navbar-content ml-auto">
+              <button class="btn btn-action mr-5" type="button" onclick="toggleDarkMode()">
+                  <i class="fa fa-moon-o" aria-hidden="true"></i>
+                  <span class="sr-only">Toggle dark mode</span>
+              </button>
+              <a class="btn btn-primary btn-block" id="clearbutton" role="button" onclick="cleardata()">Clear</a>
+          </div>
+      </nav>
+      <div class="content-wrapper" style="overflow: hidden">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12"></div>
+            <div class="chart-wrapper">
+              <div id="chart-demo-line" class="chart-lg"></div>
+              <canvas id="myChart"></canvas>
+            </div>
+          </div>
+        </div>                  
+        <div class="row">
+          <div class="col-3">
+            <div class="table-wrapper" id="datatable">
+            <div class="ta enctype=multipart/form-data-container">
+              <table class="table tablesorter">
+                <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Reading</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+          <div class="col-9">
+            <div class="cad">
+              <div class="row row-eq-spacing h-250">
+                <div class="col-6">
+                  <div class="card">
+                    <h2 class="card-title">Meter</h2>
+                    <span id="reading-now" class="reading">-</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card">
+                    <h2 class="card-title">Elapsed Time</h2>
+                    <span id="elapsed-time" class="time">-</span>
+                  </div>
+                </div>
+                <!-- Overflow occurs here on large screens (and down) -->
+                <!-- Therefore, a v-spacer is added at this point -->
+                <div class="v-spacer"></div> <!-- d-xl-none = display: none only on extra large screens (> 1200px) -->
+                <div class="col-6">
+                  <div class="card">
+                    <h2 class="card-title">Min</h2>
+                    <span id="min-value" class="reading">-</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card">
+                    <h2 class="card-title">Max</h2>
+                    <span id="max-value" class="reading">-</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+</html>
