@@ -127,7 +127,6 @@ function clickrow(e) {
 
 function loaddata(response,ct) {
     if (ct == 0) {
-        cleardata()         
         $("table").hide()       
         $("#progbar").show()
         $(".progress-bar").attr('style', "width: " + "0% !important")    
@@ -211,6 +210,7 @@ function connectclick() {
     $("#devbutton").addClass("disabled")
     if (devbuttonstate == 0) {
         $("#devbutton").attr("value","Connecting...")
+        cleardata()
         $.ajax("/start", {
             data : JSON.stringify({"device": $("#device")[0].value}),
             contentType : 'application/json',
@@ -238,18 +238,19 @@ function loadclick() {
     if (!$("#logbutton").hasClass("disabled")) {
         $("#logbutton").addClass("disabled")
         if ($("#logfile")[0].value) {
+            cleardata()
             $.ajax("/loadlog", {
-            data : JSON.stringify({"logfile": $("#logfile")[0].value}),
-            contentType : 'application/json',
-            type : 'POST',
-            success: function(response) {
-                setTimeout(function() {
-                    loaddata(response,0)
-                })
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                console.log(thrownError)
-            }
+                data : JSON.stringify({"logfile": $("#logfile")[0].value}),
+                contentType : 'application/json',
+                type : 'POST',
+                success: function(response) {
+                    setTimeout(function() {
+                        loaddata(response,0)
+                    })
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    console.log(thrownError)
+                }
             })     
         }
         $(".dropdown").removeClass("show").find(".active").removeClass("active")
