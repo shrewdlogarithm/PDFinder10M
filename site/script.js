@@ -50,7 +50,7 @@ function adddata(tim,val) {
         $("table tr:last").remove()
     } 
     
-    $row = $("<tr><td><span>" + new Date(tim).toLocaleString() + "</span></td><td>" + val + "</td></tr>")
+    $row = $("<tr><td><span>" + new Date(tim).toLocaleString() + "</span></td><td class=\"readingvalue\">" + val + "</td></tr>")
     $('table')
     .find('tbody').append($row)
     // .trigger('addRows', [$row, false]);        
