@@ -12,7 +12,6 @@ activedev = False # active devicename or False if we're not connected
 blenames = []
 comports = []
 loop = asyncio.get_event_loop() # TODO this isn't assigned yet - doesn't SEEM to be a problem but...
-lasttime = -1 
 
 async def getbledevs():
     global blenames
@@ -41,13 +40,10 @@ def getdevs():
     getcomdevs()
 
 def sendval(dev,val):
-    global lasttime
     tim = round(time.time()*1000,0) # seconds or ms - it cannot decide!!
     val = abs(round(val,3)*1000) # we care not for negative values or undue precision...
-    if tim-lasttime > 250: # this gets called a LOT - esp from BLE devices - we max out at 4/s
-        sse.add_message(json.dumps({"type": "data","value": val,"time": tim}))
-        utils.writelogs(dev.replace("/dev/tty",""),[[tim,val]])
-        lasttime = tim
+    sse.add_message(json.dumps({"type": "data","value": val,"time": tim}))
+    utils.writelogs(dev.replace("/dev/tty",""),[[tim,val]])
 
 def closelog():
     global activedev
@@ -71,20 +67,25 @@ async def ableloop(devicename):
     def handle(sender,data):
         sendval(devicename,float(OWONDecode.decode(sender,data)[1]))
 
-    print("BLE Scanning for",devicename)
+    sse.add_message(json.dumps({"type": "log","value": "BLE Scanning for " + devicename}))
     devices = await BleakScanner.discover(return_adv=True)
     for d, a in devices.values():            
         if d.name == devicename:
-            print("BLE Connected")
-            async with BleakClient(d.address) as client:
-                while reading and client.is_connected:
-                    try: # this can throw an exception on disconnected - we can ignore it
-                        await client.start_notify(MODEL_NBR_UUID,handle)                                
-                    except:
-                        pass
-                reading = False
-                print("BLE Disconnected")                
-    print("BLE Ending")
+            sse.add_message(json.dumps({"type": "log","value": "BLE Connected"}))
+            try:
+                async with BleakClient(d.address) as client:
+                    while reading and client.is_connected:
+                        try: # this can throw an exception on disconnected - we can ignore it
+                            await client.start_notify(MODEL_NBR_UUID,handle)                                
+                            while client.is_connected:
+                                await asyncio.sleep(3)
+                            sse.add_message(json.dumps({"type": "log","value": "BLE Disconnected"}))
+                        except Exception as e:
+                            print("BLE Exception",e) 
+                    reading = False
+            except Exception as e:
+                print("Bleak Exception",e)
+    sse.add_message(json.dumps({"type": "log","value": "BLE Ending"}))
     closelog()
     
 def bleloop(devicename):
@@ -99,15 +100,15 @@ def bleloop(devicename):
 def comloop(portname):
     global reading
     reading = True
-    print("COMM starting on",portname)
+    sse.add_message(json.dumps({"type": "log","value": "COMM starting on " + portname}))
     while reading:
         try:
             number = pydmm.read_dmm(port=portname, baudrate=2400,timeout=3)
             sendval(portname,float(number))
         except Exception as e:
-            print("COMM reading failed")
+            sse.add_message(json.dumps({"type": "log","value": "COMM reading failed"}))
             reading = False
-    print("COMM Ending")
+        sse.add_message(json.dumps({"type": "log","value": "COMM Ending"}))
     closelog()
 
 ## Flask Server

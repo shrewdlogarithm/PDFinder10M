@@ -305,20 +305,30 @@ $( document ).ready(function() {
     // $(".tablesorter").tablesorter({sortList: [[0,0]]});
 });
 
+var checkdisconnect 
 function startserver() {
     if (!!window.EventSource) {        
         var source = new EventSource('/stream');
         source.onmessage = function(e) {   
             try {
+                if (checkdisconnect)
+                    clearTimeout(checkdisconnect)
+                checkdisconnect = setTimeout(function() {
+                    console.log("NO MESSAGE RECIEVED FOR 10 SECONDS")
+                },10000)                    
                 edata = JSON.parse(e.data) 
                 if (edata.type == "data") {
                     $("#reading-now").text(edata.value + "ma")
                     adddata(edata.time,edata.value)
                     chartdirty = true
-                } else if (edata.type == "disconnected" && devbuttonstate == 1)
+                } else if (edata.type == "disconnected" && devbuttonstate == 1) {
+                    if (checkdisconnect)
+                        clearTimeout(checkdisconnect)
                     godisconnected()
-                else if (edata.type == "filesupdated")
+                } else if (edata.type == "filesupdated")
                     getfiles()
+                else if (edata.type == "log")
+                    $(".logs").prepend($("<div></div>").text(edata.value))
             } catch (error) {
                 console.log(error)
             }            
