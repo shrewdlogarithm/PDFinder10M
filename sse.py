@@ -32,3 +32,4 @@ def add_message(m):
     lastsse = datetime.now()
     msg = format_sse(data=m)
     announcer.announce(msg=msg)
+    print(m)

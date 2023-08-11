@@ -31,6 +31,7 @@ function goconnected() {
 }
 
 function godisconnected() {
+    $("#connect").removeClass("btn-success").addClass("btn-danger").text("Connect/Load")
     $("#devbutton").removeClass("disabled").attr("value","Connect to Device")
     $("#logbutton").removeClass("disabled")
     devbuttonstate = 0
@@ -50,7 +51,8 @@ function adddata(tim,val) {
         $("table tr:last").remove()
     } 
     
-    $row = $("<tr><td><span>" + new Date(tim).toLocaleString() + "</span></td><td class=\"readingvalue\">" + val + "</td></tr>")
+    timenow = new Date(tim)
+    $row = $("<tr><td><span>" + String(timenow.getMonth()+1) + "/" + timenow.getDate() + " " + timenow.getHours() + ":" + String(timenow.getMinutes()).padStart(2,"0") + ":" + String(timenow.getSeconds()).padStart(2,"0") + "</span></td><td class=\"readingvalue\">" + val + "</td></tr>")
     $('table')
     .find('tbody').append($row)
     // .trigger('addRows', [$row, false]);        
@@ -166,6 +168,7 @@ function loaddevs() {
                 $("#device").append($("<option " + test + " value=\"com:" + response.com[dev].port + "\">Serial Port: " + response.com[dev].name + "</option>"))            
             }
             if (response.active) {
+                addlogmsg("Reconnected to " + response.active)
                 $.ajax("/loadlog", {
                     data : JSON.stringify({"portname": $("#device")[0].value}),
                     contentType : 'application/json',
@@ -176,6 +179,7 @@ function loaddevs() {
                         setTimeout(function() {
                             loaddata(response,0)
                         })        
+                        $("#connect").removeClass("btn-danger").addClass("btn-success").text("Connected")                        
                     },
                     error: function(xhr, ajaxOptions, thrownError) {
                         console.log(thrownError)
@@ -206,12 +210,13 @@ function getfiles() {
 }
 
 function connectclick() {
+    $("#connect").text("Connecting...")
     if (!$("#devbutton").hasClass("disabled") && $("#device")[0].value) {
     $("#devbutton").addClass("disabled")
     if (devbuttonstate == 0) {
         $("#devbutton").attr("value","Connecting...")
         cleardata()
-        $.ajax("/start", {
+        $.ajax("/startread", {
             data : JSON.stringify({"device": $("#device")[0].value}),
             contentType : 'application/json',
             type : 'POST',
@@ -305,6 +310,11 @@ $( document ).ready(function() {
     // $(".tablesorter").tablesorter({sortList: [[0,0]]});
 });
 
+function addlogmsg(msg) {
+    timenow = new Date()
+    $(".logs").prepend($("<div></div>").text(timenow.getHours() + ":" + timenow.getMinutes()  + " - " + msg))
+}
+
 var checkdisconnect 
 function startserver() {
     if (!!window.EventSource) {        
@@ -321,14 +331,19 @@ function startserver() {
                     $("#reading-now").text(edata.value + "ma")
                     adddata(edata.time,edata.value)
                     chartdirty = true
-                } else if (edata.type == "disconnected" && devbuttonstate == 1) {
-                    if (checkdisconnect)
-                        clearTimeout(checkdisconnect)
-                    godisconnected()
+                } else if (edata.type == "connect") {
+                    if (!edata.status) {
+                        if (checkdisconnect)
+                            clearTimeout(checkdisconnect)
+                        godisconnected()
+                    } else if (edata.status) {
+                        $("#connect").removeClass("btn-danger").addClass("btn-success").text("Connected")
+                    }
                 } else if (edata.type == "filesupdated")
                     getfiles()
-                else if (edata.type == "log")
-                    $(".logs").prepend($("<div></div>").text(edata.value))
+                else if (edata.type == "log") {
+                    addlogmsg(edata.value)
+                }
             } catch (error) {
                 console.log(error)
             }            

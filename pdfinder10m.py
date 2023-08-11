@@ -49,7 +49,7 @@ def closelog():
     global activedev
     if activedev:
         # TODO we need to wrap-up the logfile IF it's worth saving (we may just have disconnected unsuccessfully)
-        sse.add_message(json.dumps({"type": "disconnected","device": activedev}))
+        sse.add_message(json.dumps({"type": "connect","status": False, "device": activedev}))
         try:
             logs = utils.readlogs(activedev)
             if len(logs) > 10:
@@ -76,8 +76,9 @@ async def ableloop(devicename):
                 async with BleakClient(d.address) as client:
                     while reading and client.is_connected:
                         try: # this can throw an exception on disconnected - we can ignore it
-                            await client.start_notify(MODEL_NBR_UUID,handle)                                
-                            while client.is_connected:
+                            await client.start_notify(MODEL_NBR_UUID,handle)       
+                            sse.add_message(json.dumps({"type": "connect","status": True, "device": devicename}))                         
+                            while reading and client.is_connected:
                                 await asyncio.sleep(3)
                             sse.add_message(json.dumps({"type": "log","value": "BLE Disconnected"}))
                         except Exception as e:
@@ -101,6 +102,7 @@ def comloop(portname):
     global reading
     reading = True
     sse.add_message(json.dumps({"type": "log","value": "COMM starting on " + portname}))
+    sse.add_message(json.dumps({"type": "connect","status": True, "device": portname}))                         
     while reading:
         try:
             number = pydmm.read_dmm(port=portname, baudrate=2400,timeout=3)
@@ -108,7 +110,7 @@ def comloop(portname):
         except Exception as e:
             sse.add_message(json.dumps({"type": "log","value": "COMM reading failed"}))
             reading = False
-        sse.add_message(json.dumps({"type": "log","value": "COMM Ending"}))
+    sse.add_message(json.dumps({"type": "log","value": "COMM Ending"}))
     closelog()
 
 ## Flask Server
@@ -157,7 +159,7 @@ def loadlog():
             return(utils.readlogs(logf,"save"))
     return "OK"
 
-@app.route("/start", methods=['POST'])
+@app.route("/startread", methods=['POST'])
 def startread():  
     global activedev
     closelog() # we do this to ensure there's nothing left in the logfile - e.g. from a crash
