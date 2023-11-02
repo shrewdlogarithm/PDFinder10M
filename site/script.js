@@ -298,7 +298,7 @@ $( document ).ready(function() {
             onClick: function(evt,elements,chart) {
                 try {
                     scrollTableTo($("#DP" + elements[0].index)[0],"#datatable")
-                } catch {
+                } catch  {
                     
                 }
                 // hlvalue = -1
@@ -317,40 +317,45 @@ function addlogmsg(msg) {
 
 var checkdisconnect 
 function startserver() {
-    if (!!window.EventSource) {        
-        var source = new EventSource('/stream');
-        source.onmessage = function(e) {   
-            try {
-                if (checkdisconnect)
-                    clearTimeout(checkdisconnect)
-                checkdisconnect = setTimeout(function() {
-                    console.log("NO MESSAGE RECIEVED FOR 10 SECONDS")
-                },10000)                    
-                edata = JSON.parse(e.data) 
-                if (edata.type == "data") {
-                    $("#reading-now").text(edata.value + "ma")
-                    adddata(edata.time,edata.value)
-                    chartdirty = true
-                } else if (edata.type == "connect") {
-                    if (!edata.status) {
-                        if (checkdisconnect)
-                            clearTimeout(checkdisconnect)
+    try {
+        if (!!window.EventSource) {        
+            var source = new EventSource('/stream');
+            source.onmessage = function(e) {   
+                try {
+                    if (checkdisconnect)
+                        clearTimeout(checkdisconnect)
+                    checkdisconnect = setTimeout(function() {
+                        console.log("NO MESSAGE RECEIVED FOR 10 SECONDS")
                         godisconnected()
-                    } else if (edata.status) {
-                        $("#connect").removeClass("btn-danger").addClass("btn-success").text("Connected")
+                    },10000)                    
+                    edata = JSON.parse(e.data) 
+                    if (edata.type == "data") {
+                        $("#reading-now").text(edata.value + "ma")
+                        adddata(edata.time,edata.value)
+                        chartdirty = true
+                    } else if (edata.type == "connect") {
+                        if (!edata.status) {
+                            if (checkdisconnect)
+                                clearTimeout(checkdisconnect)
+                            godisconnected()
+                        } else if (edata.status) {
+                            $("#connect").removeClass("btn-danger").addClass("btn-success").text("Connected")
+                        }
+                    } else if (edata.type == "filesupdated")
+                        getfiles()
+                    else if (edata.type == "log") {
+                        addlogmsg(edata.value)
                     }
-                } else if (edata.type == "filesupdated")
-                    getfiles()
-                else if (edata.type == "log") {
-                    addlogmsg(edata.value)
-                }
-            } catch (error) {
-                console.log(error)
-            }            
+                } catch (error) {
+                    console.log(error)
+                }            
+            }
+            source.onerror = function(e) {
+                console.log(e)
+            }
         }
-        source.onerror = function(e) {
-            console.log(e)
-        }
+    } catch (e) {
+        addlogmsg("SSE Error Detected")
     }
 }
 startserver()
