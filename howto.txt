@@ -1,0 +1,7 @@
+Python requirements
+flask, bleak, pyserial
+
+
+Permissions on Linux for serial access
+sudo usermod -a -G dialout $USER
+
